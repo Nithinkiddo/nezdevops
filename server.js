@@ -1,6 +1,7 @@
 const express = require("express");
 // const bodyParser = require("body-parser"); /* deprecated */
 const cors = require("cors");
+const mysql = require("mysql2")
 
 const app = express();
 
@@ -16,9 +17,23 @@ app.use(express.json()); /* bodyParser.json() is deprecated */
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true })); /* bodyParser.urlencoded() is deprecated */
 
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'root',
+  database: 'DB'
+})
+
+
+
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
+  db.connect((err) => {
+    if (err) {
+      res.json({ message: `You do not have database connection ${err}` })
+    }
+    res.json({message: 'Connected to the mysql server'})
+  })
 });
 
 require("./app/routes/tutorial.routes.js")(app);
